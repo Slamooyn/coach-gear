@@ -1,12 +1,45 @@
-<div style="border:2px solid greenyellow; background:linear-gradient(rgb(12, 174, 218),#92fef2); border-radius:10px; padding:20px; width:350px; font-family:Arial, sans-serif;">
-  <h5 style="color:#9c1f8e; margin-bottom:5px;">Nama Aplikasi: </h5>
-  <p style="color:blueviolet; font-weight:bold; margin-bottom:15px;">{{ aplikasi }}</p>
+{% extends 'base.html' %}
+{% block content %}
+<h1>Daftar Produk</h1>
 
-  <h5 style="color:#9c1f8e; margin-bottom:5px;">Name: </h5>
-  <p style="color:rebeccapurple; font-weight:bold; margin-bottom:15px;">{{ name }}</p>
+<h5>Nama Aplikasi:</h5>
+<p>{{ aplikasi }}</p>
 
-  <h5 style="color:#9c1f8e; margin-bottom:5px;">Class: </h5>
-  <p style="color:blueviolet; font-weight:bold;">{{ class }}</p>
+<h5>Name:</h5>
+<p>{{ name }}</p>
 
-  <button style = "margin-top:20px; padding:10px 15px; background-color:#27ae60; color:white; border:none; border-radius:5px; cursor:pointer; " onclick="window.location.href='/'">Kembali</button>
+<h5>Class:</h5>
+<p>{{ class }}</p>
+
+<a href="{% url 'main:product_add' %}">
+  <button>+ Tambah Produk</button>
+</a>
+
+<hr>
+
+{% if not products %}
+<p>Belum ada produk yang ditambahkan.</p>
+{% else %}
+
+{% for product in products %}
+<div>
+  <h2><a href="{% url 'main:product_details' product.id %}">{{ product.name }}</a></h2>
+
+  <p><b>Kategori:</b> {{ product.category }} | 
+     <b>Harga:</b> Rp {{ product.price }}</p>
+
+  {% if product.thumbnail %}
+    <img src="{{ product.thumbnail.url }}" alt="{{ product.name }}" width="150" height="100">
+    <br />
+  {% endif %}
+
+  <p>{{ product.description|truncatewords:25 }}...</p>
+
+  <p><a href="{% url 'main:product_details' product.id %}"><button>Detail</button></a></p>
 </div>
+
+<hr>
+{% endfor %}
+
+{% endif %}
+{% endblock content %}
