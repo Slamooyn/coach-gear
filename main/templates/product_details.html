@@ -26,6 +26,13 @@
 
 
 <br>
+
+{% if news.user %}
+    <p>Author: {{ product.user.username }}</p>
+{% else %}
+    <p>Author: Anonymous</p>
+{% endif %}
+
 <a href="{% url 'main:show_main' %}">
   <button>← Kembali ke Daftar Produk</button>
 </a>
