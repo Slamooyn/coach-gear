@@ -83,10 +83,9 @@ Sejauh ini tidak ada, penjelasannya sudah sangat jelas dan sangat membantu
 
 </details>
 <details align="justify">
-    <summary><b>Tugas 4</b><summary>
+    <summary><b>Tugas 4</b></summary>
 
 ## Apa itu Django `AuthenticationForm`? Jelaskan juga kelebihan dan kekurangannya.
-
 `AuthenticationForm` di Django adalah sebuah form bawaan dari modul `django.contrib.auth.forms` yang digunakan untuk proses `login` atau autentikasi pengguna. Form ini secara default hanya memiliki dua field utama, yaitu `username` dan `password`. Saat divalidasi, Django akan secara otomatis melakukan pengecekan apakah kombinasi `username` dan `password` yang dimasukkan sesuai dengan data yang ada, sekaligus memastikan bahwa akun pengguna tersebut aktif. Jika data valid, objek user dapat diakses melalui `method form.get_user()`.
 
 Kelebihan dari `AuthenticationForm` terletak pada kemudahannya karena sudah terintegrasi langsung dengan sistem autentikasi Django, sehingga pengembang tidak perlu membuat form login dari nol. Django juga sudah menangani aspek keamanan dasar seperti hashing password dan pengecekan status user. Selain itu, form ini cukup fleksibel untuk dikustomisasi, misalnya dengan menambahkan field baru atau mengubah tampilan input menggunakan `widgets`. Dukungan bawaan untuk bekerja dengan `LoginView` juga membuat implementasi login menjadi lebih cepat dan sederhana.
@@ -116,8 +115,7 @@ Di halaman utama, aku cek dulu apakah user sudah login atau belum. Kalau sudah, 
 
 Supaya bisa dites bener-bener, aku bikin dua akun user lewat manage.py shell dan masing-masing aku tambahin tiga produk dummy. Jadi misalnya akun alice punya keyboard, mouse, monitor, sedangkan akun bob punya phone case, charger, sama earbuds. Dengan begitu pas login ke akun tertentu, yang muncul di homepage cuma produk dia sendiri.
 
-Terakhir, aku tambahin beberapa setting buat ngamanin cookies dan session di settings.py. Di local development aku biarin SESSION_COOKIE_SECURE masih false karena belum pakai HTTPS, tapi kalau production nanti harus true. Aku juga set SESSION_COOKIE_HTTPONLY biar nggak bisa diakses lewat JavaScript dan kasih SameSite=Lax buat ngurangi risiko CSRF. Jadi alurnya rapi: user bisa daftar, login, lihat produknya sendiri, logout, dan semua itu sudah nyambung sama user di database plus ada cookies buat simpan last login.~
-
+Terakhir, aku tambahin beberapa setting buat ngamanin cookies dan session di settings.py. Di local development aku biarin SESSION_COOKIE_SECURE masih false karena belum pakai HTTPS, tapi kalau production nanti harus true. Aku juga set SESSION_COOKIE_HTTPONLY biar nggak bisa diakses lewat JavaScript dan kasih SameSite=Lax buat ngurangi risiko CSRF. Jadi alurnya rapi: user bisa daftar, login, lihat produknya sendiri, logout, dan semua itu sudah nyambung sama user di database plus ada cookies buat simpan last login.
 
 </details>
 
