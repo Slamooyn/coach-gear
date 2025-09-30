@@ -10,33 +10,42 @@ from django.contrib.auth.decorators import login_required
 import datetime
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.db.models import Q
 
 
 # Create your views here.
 @login_required(login_url='/login')
 def show_main(request):
     filter_type = request.GET.get("filter", "all")  
+    search_query = request.GET.get("q", "")
 
     if filter_type == "all":
         products = Product.objects.all()
     else:
         products = Product.objects.filter(user=request.user)
 
+    if search_query:
+        products = products.filter(
+            Q(name__icontains=search_query) | Q(description__icontains=search_query)
+        )
+
     context = {
         'aplikasi': 'CoachGear',
         'name': request.user.username,
         'class': 'PBP A',
-        'products':products,
-        'last_login': request.COOKIES.get('last_login', 'Never')
+        'products': products,
+        'last_login': request.COOKIES.get('last_login', 'Never'),
+        'search_query': search_query,
     }
-    return render(request, "main.html",context)
+    return render(request, "main.html", context)
+
 
 def product_add(request):
     form = ProductForm(request.POST or None)
 
     if form.is_valid() and request.method == 'POST':
         product_entry = form.save(commit = False)
-        product_entry = request.user
+        product_entry.user = request.user
         product_entry.save()
         return redirect('main:show_main')
 
@@ -44,7 +53,7 @@ def product_add(request):
         'form': form
     }
 
-    return render(request, "create_news.html", context)
+    return render(request, "product_add.html", context)
 
 
 @login_required(login_url='/login')
@@ -118,3 +127,21 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('main:login'))
     response.delete_cookie('last_login')
     return response
+
+def edit_product(request,id):
+    product = get_object_or_404(Product, pk=id)
+    form = ProductForm(request.POST or None, instance = product)
+    if form.is_valid() and request.method == 'POST':
+        form.save()
+        return redirect('main:show_main')
+    
+    context = {
+        'form':form
+    }
+
+    return render(request, "edit_product.html",context)
+
+def delete_product(request, id):
+    product = get_object_or_404(Product, pk=id)
+    product.delete()
+    return HttpResponseRedirect(reverse('main:show_main'))

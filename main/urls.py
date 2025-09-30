@@ -1,17 +1,22 @@
 from django.urls import path
 from main.views import show_main,show_json,show_json_by_id,show_xml,show_xml_by_id,product_add,product_details,register
-from main.views import login_user,logout_user
+from main.views import login_user,logout_user,edit_product,delete_product
 app_name = 'main'
 
 urlpatterns = [
     path('', show_main, name='show_main'),
     path('json/', show_json, name='show_json'),
     path('xml/', show_xml, name='show_xml'),
-    path('xml/<str:product_id>/', show_xml_by_id, name='show_xml_by_id'),
-    path('json/<str:product_id>/', show_json_by_id, name='show_json_by_id'),
-    path('product/<str:id>/', product_details, name='product_details'),
+
+    # kalau mau by id pakai int bukan uuid
+    path('xml/<int:product_id>/', show_xml_by_id, name='show_xml_by_id'),
+    path('json/<int:product_id>/', show_json_by_id, name='show_json_by_id'),
+
+    path('product/<int:id>/', product_details, name='product_details'),
     path('product-add/', product_add, name='product_add'),
     path('register/', register, name='register'),
     path('login/', login_user, name='login'),
-    path('logout/', logout_user, name='logout')
+    path('logout/', logout_user, name='logout'),
+    path('product/<int:id>/edit', edit_product, name='edit_product'),
+    path('product/<int:id>/delete', delete_product, name='delete_product'),
 ]
