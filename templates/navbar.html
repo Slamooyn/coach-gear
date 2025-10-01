@@ -1,21 +1,98 @@
-<nav class="fixed bg-yellow-500 w-full">
-  <h1>Coach Gear</h1>
+<header class="w-full sticky top-0 z-50 bg-black backdrop-blur supports-[backdrop-filter]:bg-[rgba(11,13,15,0.6)] border-b border-white/10">
+  <nav class="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between h-16">
 
-  <ul>
-    <li><a href="/">Home</a></li>
-    <li><a href="{% url 'main:product_add' %}">Add Product</a></li>
-  </ul>
+    <a href="{% url 'main:show_main' %}" class="inline-flex items-center gap-2">
+      <span class="h-8 w-8 rounded-md bg-yellow-500 inline-flex items-center justify-center text-sm font-bold text-black">CG</span>
+      <span class="font-heading text-xl font-bold tracking-tight text-white">Coach Gear</span>
+      <span class="sr-only">Go to homepage</span>
+    </a>
 
-  {% if user.is_authenticated %}
-    <div>
-      <span>Welcome, {{ name|default:user.username }}</span>
-      <span>{{ npm|default:"Student" }} - {{ class|default:"Class" }}</span>
-      <a href="{% url 'main:logout' %}">Logout</a>
+    <div class="hidden md:flex items-center gap-6">
+      <a href="{% url 'main:show_main' %}#product-section" class="text-sm text-white opacity-80 hover:opacity-100 transition">Home</a>
+      <a href="{% url 'main:show_main' %}?filter=all#product-section" class="text-sm text-white opacity-80 hover:opacity-100 transition">Product</a>
+      <a href="{% url 'main:show_main' %}?filter=my#product-section" class="text-sm text-white opacity-80 hover:opacity-100 transition">MyProduct</a>
     </div>
-  {% else %}
-    <div>
-      <a href="{% url 'main:login' %}">Login</a>
-      <a href="{% url 'main:register' %}">Register</a>=
+
+    <div class="hidden md:flex items-center gap-2 relative">
+      {% if user.is_authenticated %}
+        <button id="userDropdownBtn" class="text-white text-sm px-3 py-1 rounded hover:bg-white/10 transition">
+          Hi, {{ user.username }}
+        </button>
+
+        <div id="userDropdownMenu" class="hidden absolute right-0 mt-32 w-40 bg-black backdrop-blur border border-white/10 rounded shadow-md z-50">
+          <a href="{% url 'main:product_add' %}" class="block px-4 py-2 text-sm text-white hover:bg-yellow-600 transition">+ Tambah Produk</a>
+          <a href="{% url 'main:logout' %}" class="block px-4 py-2 text-sm text-white hover:bg-red-600 transition">Logout</a>
+        </div>
+      {% else %}
+        <a href="{% url 'main:login' %}" class="text-sm text-white border border-white/40 px-3 py-1 rounded hover:bg-white/20 transition">Login</a>
+        <a href="{% url 'main:register' %}" class="text-sm bg-yellow-500 text-black px-3 py-1 rounded hover:bg-yellow-400 transition">Register</a>
+      {% endif %}
     </div>
-  {% endif %}
-</nav>
+
+    <div class="md:hidden flex items-center">
+      <button class="mobile-menu-button p-2 text-white">
+        <span class="sr-only">Open menu</span>
+        <div class="w-6 h-6 flex flex-col justify-center items-center">
+          <span class="bg-white block h-0.5 w-6 rounded-sm transition-all"></span>
+          <span class="bg-white block h-0.5 w-6 rounded-sm my-1 transition-all"></span>
+          <span class="bg-white block h-0.5 w-6 rounded-sm transition-all"></span>
+        </div>
+      </button>
+    </div>
+
+  </nav>
+
+  <div class="mobile-menu hidden md:hidden bg-[rgba(11,13,15,0.95)] backdrop-blur border-t border-white/10 max-h-screen overflow-y-auto">
+    <div class="px-4 py-4 space-y-4">
+      <a href="{% url 'main:show_main' %}#product-section" class="block text-white py-2 px-3 rounded hover:bg-white/10 transition">Home</a>
+      <a href="{% url 'main:show_main' %}?filter=all#product-section" class="block text-white py-2 px-3 rounded hover:bg-white/10 transition">Product</a>
+      <a href="{% url 'main:show_main' %}?filter=my#product-section" class="block text-white py-2 px-3 rounded hover:bg-white/10 transition">MyProduct</a>
+      
+      <div class="border-t border-white/10 pt-3">
+        {% if user.is_authenticated %}
+          <span class="block text-white py-2">User: {{ user.username }}</span>
+          <a href="{% url 'main:product_add' %}" class="block text-white py-2 px-3 rounded hover:bg-yellow-600 transition">Tambah Produk</a>
+          <a href="{% url 'main:logout' %}" class="block text-white py-2 px-3 rounded hover:bg-red-600 transition">Logout</a>
+          <div class="border-t border-white/10 mt-2 px-4 py-2">
+            <p class="text-[10px] text-gray-400 leading-tight">
+              Website dimiliki oleh <br>
+              <span class="font-semibold text-white">Muhammad Salman Fahri</span><br>
+              2406343514 - Kelas PBP F
+            </p>
+          </div>
+        {% else %}
+          <a href="{% url 'main:login' %}" class="block text-white py-2 px-3 rounded hover:bg-white/10 transition">Login</a>
+          <a href="{% url 'main:register' %}" class="block bg-yellow-500 text-black py-2 px-3 rounded hover:bg-yellow-400 transition">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.querySelector("button.mobile-menu-button");
+      const menu = document.querySelector(".mobile-menu");
+      if (btn && menu) {
+        btn.addEventListener("click", () => menu.classList.toggle("hidden"));
+      }
+
+      const userBtn = document.getElementById("userDropdownBtn");
+      const userMenu = document.getElementById("userDropdownMenu");
+
+      if (userBtn && userMenu) {
+        userMenu.classList.add("hidden");
+
+        userBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          userMenu.classList.toggle("hidden");
+        });
+
+        document.addEventListener("click", (e) => {
+          if (!userBtn.contains(e.target) && !userMenu.contains(e.target)) {
+            userMenu.classList.add("hidden");
+          }
+        });
+      }
+    });
+  </script>
+</header>

@@ -1,75 +1,85 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Main • {{ aplikasi }}{% endblock title %}
+
 {% block content %}
 {% include 'navbar.html' %}
-<div>
-  <h1>Daftar Produk</h1>
 
+<section class="section mt-4">
+  <div class="mx-auto max-w-7xl px-4">
+    <div class="relative overflow-hidden rounded-lg border border-white/10">
+      <img src="{% static 'images/imgweb.png' %}" 
+           alt="Product showcase banner"
+           class="h-[240px] md:h-[360px] w-full object-cover brightness-50" />
+      <div class="absolute inset-0 bg-gradient-to-t from-[#0B0D0FCC] to-transparent"></div>
+      <div class="absolute inset-0 flex items-start px-6 md:px-10 py-8">
+        <div class="rounded-lg p-6 max-w-xl ml-0 mr-auto">
+          <h1 class="font-heading text-3xl md:text-4xl font-extrabold text-white typing welcome" 
+              data-text="{% if user.is_authenticated %}Halo {{ user.username }}, Welcome to Coach Gear{% else %}Welcome to Coach Gear{% endif %}"></h1>
+          <p class="mt-6 text-gray-200 text-sm md:text-base text-justify typing description" 
+             data-text="Coach Gear adalah platform e-commerce untuk jual beli barang olahraga dan perlengkapan lifestyle branded, dengan harga terjangkau dan kualitas terjamin. Temukan produk favoritmu mulai dari sepatu, jersey, hingga perlengkapan olahraga lainnya. Semua barang dipilih dengan teliti agar tetap berkualitas, meskipun pre-loved."></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<h5>Nama Aplikasi:</h5>
-<p>{{ aplikasi }}</p>
+<section class="py-6">
+  <div class="mx-auto max-w-3xl px-4">
+    <input 
+      type="text" 
+      id="searchInput" 
+      placeholder="Cari produk..." 
+      class="bg-black text-white w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-600"
+    >
+  </div>
+</section>
 
-<h5>Name:</h5>
-<p>{{ name }}</p>
+<section class="section pt-6">
+  <div class="mx-auto max-w-7xl px-4">
+    {% if not products %}
+      <div class="text-center py-12">
+        <p class="text-gray-500 text-lg">Belum ada produk yang ditambahkan.</p>
+      </div>
+    {% else %}
+      <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% for product in products %}
+          <div class="product-card bg-black rounded-xl overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer">
+            <a href="{% url 'main:product_details' product.id %}">
+              <img src="{{ product.thumbnail }}" alt="{{ product.name }}" class="h-48 w-full object-cover">
+              <div class="p-4 flex flex-col">
+                <h2 class="product-name text-lg font-bold text-white">{{ product.name }}</h2>
+                <p class="mt-2 font-semibold text-white">Rp {{ product.price }}</p>
+                <p class="text-gray-500 text-sm mt-1">Stock: {{ product.stock }}</p>
+                <p class="text-gray-300 text-sm mt-2 truncate">{{ product.description|truncatewords:20 }}...</p>
+                <button class="mt-4 bg-yellow-600 text-black px-4 py-2 rounded-lg font-semibold w-full transition-transform duration-300 hover:scale-105 hover:bg-blue-700">
+                  Detail
+                </button>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
 
-<h5>Class:</h5>
-<p>{{ class }}</p>
+<script>
+  const searchInput = document.getElementById("searchInput");
+  const productCards = document.querySelectorAll(".product-card");
 
-<form method="get" action="">
-  <input type="text" name="q" placeholder="Cari produk..." value="{{ search_query }}">
-  <button type="submit">Search</button>
-</form>
+  searchInput.addEventListener("input", function () {
+    const query = this.value.toLowerCase();
+    productCards.forEach(card => {
+      const name = card.querySelector(".product-name").textContent.toLowerCase();
+      if (name.includes(query)) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    });
+  });
+</script>
 
-
-<a href="{% url 'main:product_add' %}">
-  <button>+ Tambah Produk</button>
-</a>
-<a href="{% url 'main:logout' %}">
-  <button>Logout</button>
-</a>
-<h5>Sesi terakhir login: {{ last_login }}</h5>
-
-<a href="?filter=all">
-    <button type="button">All Products</button>
-</a>
-<a href="?filter=my">
-    <button type="button">My Products</button>
-</a> 
-</div>
-
-<hr>
-
-{% if not products %}
-<p>Belum ada produk yang ditambahkan.</p>
-{% else %}
-
-{% for product in products %}
-<div>
-  <h2><a href="{% url 'main:product_details' product.id %}">{{ product.name }}</a></h2>
-
-  <p><b>Kategori:</b> {{ product.category }} | 
-     <b>Harga:</b> Rp {{ product.price }}</p>
-
-  {% if product.thumbnail %}
-    <img src="{{ product.thumbnail}}" alt="{{ product.name }}" width="150" height="100">
-    <br />
-  {% endif %}
-
-  <p>{{ product.description|truncatewords:25 }}...</p>
-
-  <p><a href="{% url 'main:product_details' product.id %}"><button>Detail</button></a></p>
-  <a href="{% url 'main:edit_product' product.pk}">
-    <button>
-      Edit Here
-    </button>
-  </a>
-       <a href="{% url 'main:delete_product' product.pk %}">
-      <button>
-          Delete
-      </button>
-</div>
-
-<hr>
-{% endfor %}
-
-{% endif %}
 {% endblock content %}

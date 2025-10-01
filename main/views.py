@@ -145,3 +145,20 @@ def delete_product(request, id):
     product = get_object_or_404(Product, pk=id)
     product.delete()
     return HttpResponseRedirect(reverse('main:show_main'))
+
+
+@login_required(login_url='/login')
+def product_list(request):
+    products = Product.objects.all()
+    context = {
+        "products": products
+    }
+    return render(request, "product_list.html", context)
+
+@login_required(login_url='/login')
+def my_product(request):
+    products = Product.objects.filter(user=request.user)
+    context = {
+        "products": products
+    }
+    return render(request, "my_product.html", context)

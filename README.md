@@ -120,3 +120,20 @@ Terakhir, aku tambahin beberapa setting buat ngamanin cookies dan session di set
 </details>
 
 
+<details align="justify">
+    <summary><b>Tugas 5</b></summary>
+
+Jika terdapat beberapa CSS selector yang diterapkan pada satu elemen HTML, browser akan menentukan prioritas berdasarkan tingkat spesifisitasnya. Urutan prioritas dimulai dari inline style yang ditulis langsung pada elemen, kemudian diikuti oleh selector dengan ID, selanjutnya class, attribute, dan pseudo-class, lalu yang paling rendah adalah selector tag atau pseudo-element. Jika terdapat aturan dengan tingkat spesifisitas yang sama, maka aturan yang ditulis paling akhir akan diambil.
+
+Konsep responsive design sangat penting dalam pengembangan aplikasi web karena saat ini pengguna mengakses internet melalui berbagai perangkat dengan ukuran layar yang berbeda. Dengan responsive design, tampilan aplikasi dapat menyesuaikan ukuran layar sehingga tetap nyaman diakses baik di desktop, tablet, maupun smartphone. Sebagai contoh, Instagram Web sudah menerapkan responsive design karena tampilannya tetap rapi di berbagai perangkat, sedangkan beberapa situs web lama seperti portal sekolah atau instansi pemerintah seringkali belum responsive sehingga sulit diakses lewat perangkat mobile.
+
+Margin, border, dan padding merupakan tiga hal yang berbeda dalam CSS box model. Margin adalah jarak di luar elemen yang memisahkannya dengan elemen lain di sekitarnya. Border adalah garis tepi yang mengelilingi elemen. Sedangkan padding adalah ruang di dalam elemen, yaitu antara konten dengan border. Ketiganya bisa diatur dengan properti CSS masing-masing, misalnya `margin: 20px;`, `border: 2px solid black;`, atau `padding: 10px;`. Analogi sederhananya seperti sebuah kardus: barang di dalam kardus adalah konten, ruang kosong di dalam kardus adalah padding, dinding kardus adalah border, dan ruang kosong di luar kardus adalah margin.
+
+Flexbox dan grid layout merupakan dua teknik modern dalam CSS untuk mengatur tata letak. Flexbox berfungsi untuk mengatur layout dalam satu dimensi, entah secara horizontal (baris) maupun vertikal (kolom), sehingga mempermudah perataan dan distribusi elemen. Grid layout berbeda karena mendukung pengaturan dalam dua dimensi sekaligus (baris dan kolom) sehingga sangat cocok untuk tampilan yang lebih kompleks seperti dashboard atau galeri.
+
+Proses implementasi checklist dilakukan secara bertahap. Pertama, saya membuat struktur HTML dasar untuk halaman seperti login dan register. Setelah itu, saya menambahkan CSS untuk memberikan warna, padding, margin, serta menata tombol. Selanjutnya, saya menggunakan flexbox untuk memusatkan form agar rapi di tengah halaman, serta grid untuk layout yang membutuhkan pembagian kolom. Checkbox kemudian diubah tampilannya agar lebih menarik, misalnya warna berubah menjadi kuning ketika dicentang. Setelah struktur dasar selesai, saya menambahkan responsivitas menggunakan media query bawaan Tailwind agar tampilan tetap menyesuaikan ukuran layar perangkat. Terakhir, saya melakukan pengujian di berbagai perangkat untuk memastikan semuanya berfungsi dengan baik.
+
+</details>
+
+
+

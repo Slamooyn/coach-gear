@@ -1,18 +1,85 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 {% block content %}
-<h1>TAMBAH PRODUK</h1>
+{% include 'navbar.html' %}
 
-<form method="POST">
-  {% csrf_token %}
-  <table>
-    {{ form.as_table }}
-    <tr>
-      <td></td>
-      <td>
-        <input type="submit" value="Add Product" />
-      </td>
-    </tr>
-  </table>
-</form>
+<section class="section mt-10">
+  <div class="max-w-xl mx-auto px-4">
+    <div class="bg-black rounded-xl shadow-2xl p-6 text-white">
+      <div class="flex items-center justify-center mb-6 space-x-2">
+        <div class="bg-yellow-500 px-2 py-1 rounded-md">
+          <span class="text-black font-bold text-lg">CG</span>
+        </div>
+        <span class="text-white font-semibold text-xl">Coach Gear</span>
+      </div>
 
-{% endblock %}
+      <h1 class="text-2xl md:text-3xl font-extrabold mb-6 text-center">
+        Tambah Produk
+      </h1>
+      <form method="POST" class="space-y-5">
+        {% csrf_token %}
+
+        <div class="flex flex-col">
+          {{ form.name.label_tag }}
+          {{ form.name }}
+          {% if form.name.errors %}
+            <span class="text-red-500 text-sm mt-1">{{ form.name.errors }}</span>
+          {% endif %}
+        </div>
+
+        <div class="flex flex-col">
+          {{ form.price.label_tag }}
+          {{ form.price }}
+          {% if form.price.errors %}
+            <span class="text-red-500 text-sm mt-1">{{ form.price.errors }}</span>
+          {% endif %}
+        </div>
+
+        <div class="flex flex-col">
+          {{ form.description.label_tag }}
+          {{ form.description }}
+          {% if form.description.errors %}
+            <span class="text-red-500 text-sm mt-1">{{ form.description.errors }}</span>
+          {% endif %}
+        </div>
+
+        <div class="flex flex-col">
+          {{ form.thumbnail.label_tag }}
+          {{ form.thumbnail }}
+          {% if form.thumbnail.errors %}
+            <span class="text-red-500 text-sm mt-1">{{ form.thumbnail.errors }}</span>
+          {% endif %}
+        </div>
+
+        <div class="flex flex-col">
+          {{ form.category.label_tag }}
+          {{ form.category }}
+          {% if form.category.errors %}
+            <span class="text-red-500 text-sm mt-1">{{ form.category.errors }}</span>
+          {% endif %}
+        </div>
+
+        <div class="flex flex-row items-center space-x-2">
+          {{ form.is_featured.label_tag }}
+          {{ form.is_featured }}
+        </div>
+
+        <div class="flex flex-col">
+          {{ form.stock.label_tag }}
+          {{ form.stock }}
+          {% if form.stock.errors %}
+            <span class="text-red-500 text-sm mt-1">{{ form.stock.errors }}</span>
+          {% endif %}
+        </div>
+
+        <div class="flex justify-center">
+          <button type="submit" 
+                  class="bg-yellow-600 text-black px-5 py-2 rounded-lg font-semibold transition-transform duration-300 hover:scale-105 hover:bg-blue-700">
+            + Tambah Produk
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+{% endblock content %}

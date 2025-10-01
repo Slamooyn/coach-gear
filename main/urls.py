@@ -2,7 +2,7 @@ from django.urls import path
 from main.views import (
     show_main, show_json, show_json_by_id, show_xml, show_xml_by_id,
     product_add, product_details, register,
-    login_user, logout_user, edit_product, delete_product
+    login_user, logout_user, edit_product, delete_product , product_list , my_product
 )
 
 app_name = 'main'
@@ -23,4 +23,6 @@ urlpatterns = [
     path('logout/', logout_user, name='logout'),
     path('product/<uuid:id>/edit', edit_product, name='edit_product'),
     path('product/<uuid:id>/delete', delete_product, name='delete_product'),
+    path("products/", product_list, name="product_list"),
+    path("my-products/", my_product, name="my_product"),
 ]

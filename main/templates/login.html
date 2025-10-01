@@ -5,29 +5,49 @@
 {% endblock meta %}
 
 {% block content %}
-<div class="login">
-  <h1>Login</h1>
-  <h1>Bhap</h1>
+<section class="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black">
+  <div class="bg-black text-white rounded-2xl shadow-2xl w-full max-w-md p-8 border border-gray-800">
+    <div class="flex flex-col items-center mb-8">
+      <div class="bg-yellow-600 text-black rounded-xl font-extrabold p-4 mb-4 shadow-lg">
+        CG
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-wide">Login</h1>
+      <p class="text-gray-400 text-sm mt-2">Masuk ke akunmu untuk lanjut</p>
+    </div>
+    <form method="POST" action="" class="space-y-5">
+      {% csrf_token %}
+      <div>
+        <label class="block text-sm mb-2 font-semibold">Username</label>
+        <input type="text" name="username" required
+               class="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-600 placeholder-gray-400"
+               placeholder="Masukkan username">
+      </div>
+      <div>
+        <label class="block text-sm mb-2 font-semibold">Password</label>
+        <input type="password" name="password" required
+               class="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-600 placeholder-gray-400"
+               placeholder="Masukkan password">
+      </div>
+      <button type="submit"
+              class="w-full bg-yellow-600 text-black font-bold py-2 rounded-lg shadow-md transition-transform transform hover:scale-105 hover:bg-yellow-500">
+        Login
+      </button>
+    </form>
 
-  <form method="POST" action="">
-    {% csrf_token %}
-    <table>
-      {{ form.as_table }}
-      <tr>
-        <td></td>
-        <td><input class="btn login_btn" type="submit" value="Login" /></td>
-      </tr>
-    </table>
-  </form>
+    {% if messages %}
+      <ul class="mt-4 text-red-500 text-sm space-y-1">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
 
-  {% if messages %}
-  <ul>
-    {% for message in messages %}
-    <li>{{ message }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %} Don't have an account yet?
-  <a href="{% url 'main:register' %}">Register Now</a>
-</div>
-
+    <p class="text-gray-400 text-sm mt-6 text-center">
+      Belum punya akun?
+      <a href="{% url 'main:register' %}" class="text-yellow-500 hover:underline font-semibold">
+        Register sekarang
+      </a>
+    </p>
+  </div>
+</section>
 {% endblock content %}
