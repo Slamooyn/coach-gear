@@ -33,19 +33,22 @@
             ← Kembali ke Daftar Produk
           </button>
         </a>
-        <a href="{% url 'main:edit_product' product.pk %}">
-          <button class="bg-yello-900 text-white px-5 py-2 rounded-lg font-semibold transition-transform duration-300 hover:scale-105 hover:bg-green-800">
-            ✏️ Edit Produk
-          </button>
-        </a>
-        <form method="POST" action="{% url 'main:delete_product' product.pk %}" 
-              onsubmit="return confirm('Yakin mau hapus produk ini?')">
-          {% csrf_token %}
-          <button type="submit" 
-                  class="bg-red-600 text-white px-5 py-2 rounded-lg font-semibold transition-transform duration-300 hover:scale-105 hover:bg-red-800">
-            🗑 Hapus Produk
-          </button>
-        </form>
+
+        {% if user.is_authenticated and product.user == user %}
+          <a href="{% url 'main:edit_product' product.pk %}">
+            <button class="bg-yellow-900 text-white px-5 py-2 rounded-lg font-semibold transition-transform duration-300 hover:scale-105 hover:bg-green-800">
+              ✏️ Edit Produk
+            </button>
+          </a>
+          <form method="POST" action="{% url 'main:delete_product' product.pk %}" 
+                onsubmit="return confirm('Yakin mau hapus produk ini?')">
+            {% csrf_token %}
+            <button type="submit" 
+                    class="bg-red-600 text-white px-5 py-2 rounded-lg font-semibold transition-transform duration-300 hover:scale-105 hover:bg-red-800">
+              🗑 Hapus Produk
+            </button>
+          </form>
+        {% endif %}
       </div>
     </div>
   </div>

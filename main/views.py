@@ -11,6 +11,9 @@ import datetime
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect
 
 
 # Create your views here.
@@ -128,23 +131,32 @@ def logout_user(request):
     response.delete_cookie('last_login')
     return response
 
-def edit_product(request,id):
-    product = get_object_or_404(Product, pk=id)
-    form = ProductForm(request.POST or None, instance = product)
-    if form.is_valid() and request.method == 'POST':
-        form.save()
-        return redirect('main:show_main')
+@login_required
+def edit_product(request, id):
+    product = get_object_or_404(Product, id=id)
+
+    if product.user != request.user:
+        return HttpResponseForbidden("Kamu tidak punya izin untuk edit produk ini.")
+
+    if request.method == "POST":
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('main:show_main')
+    else:
+        form = ProductForm(instance=product)
+
+    return render(request, "edit_product.html", {"form": form, "product": product})
+
+@login_required
+def delete_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if product.user != request.user:
+        return HttpResponseForbidden("Kamu tidak punya izin hapus produk ini.")
     
-    context = {
-        'form':form
-    }
-
-    return render(request, "edit_product.html",context)
-
-def delete_product(request, id):
-    product = get_object_or_404(Product, pk=id)
-    product.delete()
-    return HttpResponseRedirect(reverse('main:show_main'))
+    if request.method == "POST":
+        product.delete()
+        return redirect('main:show_main')
 
 
 @login_required(login_url='/login')
