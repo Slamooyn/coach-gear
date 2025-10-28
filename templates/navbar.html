@@ -1,36 +1,33 @@
-<header class="w-full sticky top-0 z-50 bg-black backdrop-blur supports-[backdrop-filter]:bg-[rgba(11,13,15,0.6)] border-b border-white/10">
+<header class="w-full sticky top-0 z-50 bg-black/80 backdrop-blur-lg border-b border-white/10 shadow-lg transition-all duration-300">
   <nav class="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between h-16">
-
-    <a href="{% url 'main:show_main' %}" class="inline-flex items-center gap-2">
-      <span class="h-8 w-8 rounded-md bg-yellow-500 inline-flex items-center justify-center text-sm font-bold text-black">CG</span>
-      <span class="font-heading text-xl font-bold tracking-tight text-white">Coach Gear</span>
-      <span class="sr-only">Go to homepage</span>
+    <a href="{% url 'main:show_main' %}" class="inline-flex items-center gap-2 group">
+      <span class="h-8 w-8 rounded-md bg-yellow-500 inline-flex items-center justify-center text-sm font-bold text-black group-hover:bg-yellow-400 transition-all">CG</span>
+      <span class="font-heading text-xl font-bold tracking-tight text-white group-hover:text-yellow-400 transition-all">Coach Gear</span>
     </a>
-
     <div class="hidden md:flex items-center gap-6">
       <a href="{% url 'main:show_main' %}#product-section" class="text-sm text-white opacity-80 hover:opacity-100 transition">Home</a>
       <a href="{% url 'main:show_main' %}?filter=all#product-section" class="text-sm text-white opacity-80 hover:opacity-100 transition">Product</a>
-      <a href="{% url 'main:show_main' %}?filter=my#product-section" class="text-sm text-white opacity-80 hover:opacity-100 transition">MyProduct</a>
+      <a href="{% url 'main:show_main' %}?filter=my#product-section" class="text-sm text-white opacity-80 hover:opacity-100 transition">My Product</a>
     </div>
-
     <div class="hidden md:flex items-center gap-2 relative">
       {% if user.is_authenticated %}
-        <button id="userDropdownBtn" class="text-white text-sm px-3 py-1 rounded hover:bg-white/10 transition">
-          Hi, {{ user.username }}
+        <button id="userDropdownBtn" class="text-white text-sm px-3 py-1 rounded hover:bg-white/10 transition flex items-center gap-1">
+          👋 Hi, {{ user.username }}
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
         </button>
-
-        <div id="userDropdownMenu" class="hidden absolute right-0 mt-32 w-40 bg-black backdrop-blur border border-white/10 rounded shadow-md z-50">
-          <a href="{% url 'main:product_add' %}" class="block px-4 py-2 text-sm text-white hover:bg-yellow-600 transition">+ Tambah Produk</a>
-          <a href="{% url 'main:logout' %}" class="block px-4 py-2 text-sm text-white hover:bg-red-600 transition">Logout</a>
+        <div id="userDropdownMenu" class="hidden absolute right-0 mt-32 w-44 bg-[#0b0d0f] border border-white/10 rounded-lg shadow-lg overflow-hidden backdrop-blur-lg animate-fadeIn">
+          <a href="#" id="addProductBtnNav" class="block px-4 py-2 text-sm text-white hover:bg-yellow-600 transition">+ Tambah Produk</a>
+          <button id="logoutBtn" class="w-full text-left px-4 py-2 text-sm text-white hover:bg-red-600 transition">Logout</button>
         </div>
       {% else %}
         <a href="{% url 'main:login' %}" class="text-sm text-white border border-white/40 px-3 py-1 rounded hover:bg-white/20 transition">Login</a>
         <a href="{% url 'main:register' %}" class="text-sm bg-yellow-500 text-black px-3 py-1 rounded hover:bg-yellow-400 transition">Register</a>
       {% endif %}
     </div>
-
     <div class="md:hidden flex items-center">
-      <button class="mobile-menu-button p-2 text-white">
+      <button class="mobile-menu-button p-2 text-white hover:text-yellow-400 transition">
         <span class="sr-only">Open menu</span>
         <div class="w-6 h-6 flex flex-col justify-center items-center">
           <span class="bg-white block h-0.5 w-6 rounded-sm transition-all"></span>
@@ -41,18 +38,17 @@
     </div>
 
   </nav>
-
-  <div class="mobile-menu hidden md:hidden bg-[rgba(11,13,15,0.95)] backdrop-blur border-t border-white/10 max-h-screen overflow-y-auto">
+  <div class="mobile-menu hidden md:hidden bg-[rgba(11,13,15,0.95)] backdrop-blur border-t border-white/10 max-h-screen overflow-y-auto animate-slideDown">
     <div class="px-4 py-4 space-y-4">
       <a href="{% url 'main:show_main' %}#product-section" class="block text-white py-2 px-3 rounded hover:bg-white/10 transition">Home</a>
       <a href="{% url 'main:show_main' %}?filter=all#product-section" class="block text-white py-2 px-3 rounded hover:bg-white/10 transition">Product</a>
-      <a href="{% url 'main:show_main' %}?filter=my#product-section" class="block text-white py-2 px-3 rounded hover:bg-white/10 transition">MyProduct</a>
-      
+      <a href="{% url 'main:show_main' %}?filter=my#product-section" class="block text-white py-2 px-3 rounded hover:bg-white/10 transition">My Product</a>
+
       <div class="border-t border-white/10 pt-3">
         {% if user.is_authenticated %}
           <span class="block text-white py-2">User: {{ user.username }}</span>
-          <a href="{% url 'main:product_add' %}" class="block text-white py-2 px-3 rounded hover:bg-yellow-600 transition">Tambah Produk</a>
-          <a href="{% url 'main:logout' %}" class="block text-white py-2 px-3 rounded hover:bg-red-600 transition">Logout</a>
+          <a href="#" id="addProductBtnMobile" class="block text-white py-2 px-3 rounded hover:bg-yellow-600 transition">Tambah Produk</a>
+          <button id="logoutBtnMobile" class="block text-left w-full text-white py-2 px-3 rounded hover:bg-red-600 transition">Logout</button>
           <div class="border-t border-white/10 mt-2 px-4 py-2">
             <p class="text-[10px] text-gray-400 leading-tight">
               Website dimiliki oleh <br>
@@ -68,31 +64,55 @@
     </div>
   </div>
 
+  <style>
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .animate-fadeIn { animation: fadeIn 0.2s ease-out; }
+    .animate-slideDown { animation: slideDown 0.3s ease-out; }
+  </style>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const btn = document.querySelector("button.mobile-menu-button");
-      const menu = document.querySelector(".mobile-menu");
-      if (btn && menu) {
-        btn.addEventListener("click", () => menu.classList.toggle("hidden"));
-      }
-
-      const userBtn = document.getElementById("userDropdownBtn");
-      const userMenu = document.getElementById("userDropdownMenu");
-
-      if (userBtn && userMenu) {
-        userMenu.classList.add("hidden");
-
-        userBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          userMenu.classList.toggle("hidden");
-        });
-
-        document.addEventListener("click", (e) => {
-          if (!userBtn.contains(e.target) && !userMenu.contains(e.target)) {
-            userMenu.classList.add("hidden");
-          }
-        });
+  $(document).ready(function() {
+    $(".mobile-menu-button").click(() => $(".mobile-menu").toggleClass("hidden"));
+    $("#userDropdownBtn").click(function(e) {
+      e.stopPropagation();
+      $("#userDropdownMenu").toggleClass("hidden");
+    });
+    $(document).click(function(e) {
+      if (!$(e.target).closest("#userDropdownBtn, #userDropdownMenu").length) {
+        $("#userDropdownMenu").addClass("hidden");
       }
     });
+    $("#logoutBtn, #logoutBtnMobile").click(function(e) {
+      e.preventDefault();
+      $.ajax({
+        url: "{% url 'main:logout_user' %}",
+        method: "POST",
+        headers: { "X-Requested-With": "XMLHttpRequest" },
+        data: { csrfmiddlewaretoken: "{{ csrf_token }}" },
+        success: function(res) {
+          if (res.status === "success") {
+            window.location.href = "{% url 'main:login' %}";
+          }
+        },
+        error: function(xhr) {
+          alert("Gagal logout! (" + xhr.status + ")");
+          console.error(xhr);
+        }
+      });
+    });
+    $("#addProductBtnNav, #addProductBtnMobile").click(function(e) {
+      e.preventDefault();
+      const modal = $("#productModal");
+      if (modal.length) {
+        modal.addClass("active");
+        $("#modalTitle").text("Tambah Produk");
+        $("#productForm")[0].reset();
+      } else {
+        window.location.href = "{% url 'main:show_main' %}";
+      }
+    });
+  });
   </script>
 </header>

@@ -6,6 +6,36 @@
 {% block content %}
 {% include 'navbar.html' %}
 
+<style>
+  .typing { white-space: pre-wrap; overflow: hidden; }
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 50;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    justify-content: center; align-items: center;
+  }
+  .modal.active { display: flex; }
+  .modal-content {
+    background-color: #111;
+    border: 1px solid #333;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%; max-width: 500px;
+    color: white;
+  }
+  .close-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #aaa;
+  }
+  .close-btn:hover { color: white; }
+</style>
+
 <section class="section mt-4">
   <div class="mx-auto max-w-7xl px-4">
     <div class="relative overflow-hidden rounded-lg border border-white/10">
@@ -14,14 +44,19 @@
            class="h-[240px] md:h-[360px] w-full object-cover brightness-50" />
       <div class="absolute inset-0 bg-gradient-to-t from-[#0B0D0FCC] to-transparent"></div>
       <div class="absolute inset-0 flex items-start px-6 md:px-10 py-8">
-        <div class="rounded-lg p-6 max-w-3xl w-full ml-0 mr-auto">
+        <div class="rounded-lg p-6 max-w-3xl w-full ml-0 mr-auto text-left">
           <h1 class="font-heading text-3xl md:text-4xl font-extrabold text-white typing welcome"
-              data-text="{% if user.is_authenticated %}Halo {{ user.username }}, Welcome to Coach Gear{% else %}Welcome to Coach Gear{% endif %}">
-          </h1>
-          
-          <p class="mt-6 text-gray-200 text-sm md:text-base text-justify typing description"
-            data-text="Coach Gear adalah platform e-commerce untuk jual beli barang olahraga dan perlengkapan lifestyle branded, dengan harga terjangkau dan kualitas terjamin. Temukan produk favoritmu mulai dari sepatu, jersey, hingga perlengkapan olahraga lainnya. Semua barang dipilih dengan teliti agar tetap berkualitas, meskipun pre-loved.">
+              data-text="{% if user.is_authenticated %}Halo {{ user.username }}, Welcome to Coach Gear{% else %}Welcome to Coach Gear{% endif %}"></h1>
+
+          {% if user.is_authenticated %}
+          <p class="text-gray-400 text-sm mt-2">
+            Terakhir login: {{ user.last_login|date:"l, d F Y • H:i" }}
           </p>
+          {% endif %}
+
+          <p class="mt-6 text-gray-200 text-sm md:text-base typing description leading-relaxed"
+             style="max-width: 700px;"
+             data-text="Coach Gear adalah platform e-commerce untuk jual beli barang olahraga dan perlengkapan lifestyle branded. Temukan produk favoritmu mulai dari sepatu, jersey, hingga perlengkapan olahraga lainnya."></p>
         </div>
       </div>
     </div>
@@ -29,18 +64,23 @@
 </section>
 
 <section class="py-6">
-  <div class="mx-auto max-w-7xl px-4 flex justify-between items-center">
+  <div class="mx-auto max-w-7xl px-4 flex flex-col md:flex-row justify-between items-center gap-4">
     <input 
       type="text" 
       id="searchInput" 
-      placeholder="Cari produk..." 
-      class="bg-black text-white w-full md:w-1/2 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-600"
+      placeholder="Cari produk berdasarkan nama, kategori, atau deskripsi..." 
+      class="bg-black text-white w-full md:w-1/2 px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-600"
     >
     {% if user.is_authenticated %}
-    <button id="addProductBtn" 
-      class="ml-4 bg-yellow-600 hover:bg-yellow-700 text-black font-semibold px-5 py-2 rounded-lg transition">
-      + Tambah Produk
-    </button>
+    <div class="flex gap-2">
+      <button class="filterBtn bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg" data-filter="all">All Products</button>
+      <button class="filterBtn bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg" data-filter="my">My Products</button>
+      <button class="filterBtn bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg" data-filter="expensive">Harga > 1 juta</button>
+      <button id="addProductBtn" 
+         class="ml-4 bg-yellow-600 hover:bg-yellow-700 text-black font-semibold px-5 py-2 rounded-lg transition">
+         + Tambah Produk
+      </button>
+    </div>
     {% endif %}
   </div>
 </section>
@@ -55,20 +95,23 @@
       {% else %}
         <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {% for product in products %}
-            <div class="product-card bg-black rounded-xl overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer">
+            <div class="product-card bg-black rounded-xl overflow-hidden border border-gray-800 hover:scale-105 transition-transform duration-300 hover:shadow-2xl relative" 
+                 data-id="{{ product.id }}"
+                 data-user="{{ product.user.id }}"
+                 data-price="{{ product.price }}">
               <img src="{{ product.thumbnail }}" alt="{{ product.name }}" class="h-48 w-full object-cover">
               <div class="p-4 flex flex-col">
                 <h2 class="product-name text-lg font-bold text-white">{{ product.name }}</h2>
                 <p class="mt-2 font-semibold text-white">Rp {{ product.price }}</p>
                 <p class="text-gray-500 text-sm mt-1">Stock: {{ product.stock }}</p>
-                <p class="text-gray-300 text-sm mt-2 truncate">{{ product.description|truncatewords:20 }}...</p>
-                {% if user.is_authenticated %}
-                <div class="flex gap-2 mt-4">
-                  <button class="edit-btn bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg w-full" data-id="{{ product.id }}">Edit</button>
-                  <button class="delete-btn bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg w-full" data-id="{{ product.id }}">Hapus</button>
-                </div>
-                {% endif %}
+                <p class="text-gray-300 text-sm mt-2 truncate">{{ product.description|truncatewords:20 }}</p>
               </div>
+              {% if product.user == request.user %}
+              <div class="absolute top-2 right-2 flex gap-1">
+                <button class="edit-btn bg-yellow-600 hover:bg-yellow-700 text-black text-xs px-2 py-1 rounded">Edit</button>
+                <button class="delete-btn bg-red-600 hover:bg-red-700 text-white text-xs px-2 py-1 rounded">Hapus</button>
+              </div>
+              {% endif %}
             </div>
           {% endfor %}
         </div>
@@ -77,29 +120,16 @@
   </div>
 </section>
 
-<!-- Modal -->
-<div id="productModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-  <div class="bg-zinc-900 p-6 rounded-2xl w-full max-w-md text-white">
-    <h2 id="modalTitle" class="text-2xl font-bold mb-4">Tambah Produk</h2>
-    <form id="productForm" class="space-y-4">
+
+<div id="productModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h2 id="modalTitle" class="text-xl font-bold mb-4">Tambah Produk</h2>
+    <form id="productForm">
       {% csrf_token %}
-      <input type="hidden" id="productId">
-      <div>
-        <label for="name" class="block text-sm font-medium">Nama Produk</label>
-        <input type="text" id="name" name="name" class="w-full mt-1 px-3 py-2 bg-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" required>
-      </div>
-      <div>
-        <label for="price" class="block text-sm font-medium">Harga</label>
-        <input type="number" id="price" name="price" class="w-full mt-1 px-3 py-2 bg-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" required>
-      </div>
-      <div>
-        <label for="description" class="block text-sm font-medium">Deskripsi</label>
-        <textarea id="description" name="description" class="w-full mt-1 px-3 py-2 bg-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600" required></textarea>
-      </div>
-      <div class="flex justify-end gap-3 mt-6">
-        <button type="button" id="cancelModal" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">Batal</button>
-        <button type="submit" id="saveProductBtn" class="bg-yellow-600 hover:bg-yellow-700 text-black font-semibold px-4 py-2 rounded-lg">Simpan</button>
-      </div>
+      {{ form.as_p }}
+      <button type="submit" id="saveProductBtn" 
+        class="w-full bg-yellow-600 hover:bg-yellow-700 text-black font-semibold px-4 py-2 mt-4 rounded-lg transition">Simpan</button>
     </form>
   </div>
 </div>
@@ -108,167 +138,136 @@
 <script>
 $(document).ready(function () {
   const modal = $("#productModal");
+  const modalTitle = $("#modalTitle");
+  const form = $("#productForm");
+  const saveBtn = $("#saveProductBtn");
+  let editId = null;
 
-  // Buka modal Create
-  $("#addProductBtn").click(function () {
-    $("#modalTitle").text("Tambah Produk");
-    $("#productForm")[0].reset();
-    $("#productId").val("");
-    modal.removeClass("hidden");
+  $("#addProductBtn").click(function() {
+    editId = null;
+    form.trigger("reset");
+    modalTitle.text("Tambah Produk");
+    modal.addClass("active");
   });
 
-  // Tutup modal
-  $("#cancelModal").click(() => modal.addClass("hidden"));
 
-  // Submit form Create/Update
-  $("#productForm").submit(function (e) {
-    e.preventDefault();
-    let formData = {
-      name: $("#name").val(),
-      price: $("#price").val(),
-      description: $("#description").val(),
-      csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
-    };
-
-    let productId = $("#productId").val();
-    let url = productId ? `/edit-product/${productId}/` : `/add-product/`;
-
-    $.ajax({
-      url: url,
-      method: "POST",
-      data: formData,
-      headers: { "X-Requested-With": "XMLHttpRequest" },
-      success: function (response) {
-        if (response.status === "success") {
-          modal.addClass("hidden");
-          loadProducts();
-        } else {
-          alert("Terjadi kesalahan: " + JSON.stringify(response.errors));
-        }
-      },
-    });
+  $(".close-btn").click(function() { 
+    modal.removeClass("active"); 
   });
 
-  // Load ulang produk
-  function loadProducts() {
-    $.ajax({
-      url: "/",
-      method: "GET",
-      headers: { "X-Requested-With": "XMLHttpRequest" },
-      success: function (response) {
-        let data = JSON.parse(response.products);
-        let html = "";
-        data.forEach((p) => {
-          let f = p.fields;
-          html += `
-            <div class="product-card bg-black rounded-xl overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer">
-              <img src="${f.thumbnail || '/static/images/default.png'}" class="h-48 w-full object-cover">
-              <div class="p-4 flex flex-col">
-                <h2 class="text-lg font-bold text-white">${f.name}</h2>
-                <p class="mt-2 font-semibold text-white">Rp ${f.price}</p>
-                <p class="text-gray-500 text-sm mt-1">Stock: ${f.stock}</p>
-                <p class="text-gray-300 text-sm mt-2 truncate">${f.description}</p>
-                <div class="flex gap-2 mt-4">
-                  <button class="edit-btn bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg w-full" data-id="${p.pk}">Edit</button>
-                  <button class="delete-btn bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg w-full" data-id="${p.pk}">Hapus</button>
-                </div>
-              </div>
-            </div>
-          `;
-        });
-        $("#productsGrid").html(html);
-      },
-    });
-  }
 
-  // Edit produk
-  $(document).on("click", ".edit-btn", function () {
-    const id = $(this).data("id");
-    $.ajax({
-      url: `/product/${id}/`,
-      method: "GET",
-      headers: { "X-Requested-With": "XMLHttpRequest" },
-      success: function (response) {
-        const product = JSON.parse(response.product)[0];
-        $("#productId").val(product.pk);
-        $("#name").val(product.fields.name);
-        $("#price").val(product.fields.price);
-        $("#description").val(product.fields.description);
-        $("#modalTitle").text("Edit Produk");
-        modal.removeClass("hidden");
-      },
-    });
-  });
+    form.submit(function(e) {
+      e.preventDefault();
+      const url = editId ? `/edit-product/${editId}/` : `{% url 'main:product_add' %}`;
+      const formData = form.serialize();
 
-  $(document).on("click", ".delete-btn", function () {
-    const id = $(this).data("id");
-    if (confirm("Yakin mau hapus produk ini?")) {
       $.ajax({
-        url: `/delete-product/${id}/`,
+        url: url,
         method: "POST",
-        data: { csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val() },
+        data: formData,
         headers: { "X-Requested-With": "XMLHttpRequest" },
-        success: function (response) {
-          if (response.status === "success") {
-            loadProducts();
-          }
+        success: function(res) {
+          modal.removeClass("active");
+          showToast("Produk berhasil disimpan!", "success");
+          setTimeout(() => location.reload(), 1000);
         },
+        error: function(err) {
+          showToast("Terjadi kesalahan saat menyimpan produk!", "error");
+          console.log(err);
+        }
       });
-    }
-  });
-});
-</script>
+    });
 
-<script>
-  const searchInput = document.getElementById("searchInput");
-  const productCards = document.querySelectorAll(".product-card");
+  $(document).on("click", ".edit-btn", function(e) {
+    e.stopPropagation();
+    const card = $(this).closest(".product-card");
+    editId = card.data("id");
 
-  searchInput.addEventListener("input", function () {
-    const query = this.value.toLowerCase();
-    productCards.forEach(card => {
-      const name = card.querySelector(".product-name").textContent.toLowerCase();
-      if (name.includes(query)) {
-        card.style.display = "block";
-      } else {
-        card.style.display = "none";
+    $.ajax({
+      url: `/product/${editId}/`,
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+      success: function(res) {
+        const p = res.product;
+        modalTitle.text("Edit Produk");
+        for (const key in p) {
+          $(`#id_${key}`).val(p[key]);
+        }
+        modal.addClass("active");
+      },
+      error: function() {
+        alert("Gagal memuat data produk!");
       }
     });
   });
-</script>
+  $(document).on("click", ".delete-btn", function(e) {
+    e.stopPropagation();
+    const card = $(this).closest(".product-card");
+    const id = card.data("id");
 
+    if(confirm("Yakin ingin menghapus produk ini?")) {
+      $.ajax({
+        url: `/delete-product/${id}/`,
+        method: "POST",
+        headers: { "X-Requested-With": "XMLHttpRequest" },
+        data: { csrfmiddlewaretoken: "{{ csrf_token }}" },
+        success: function() {
+          card.fadeOut(400, () => card.remove());
+        },
+        error: function() { alert("Gagal menghapus produk!"); }
+      });
+    }
+  });
+  $(document).on("click", ".product-card", function (e) {
+    if($(e.target).is(".edit-btn, .delete-btn")) return;
+    const id = $(this).data("id");
+    window.location.href = `/product/${id}/`;
+  });
+
+  $(".filterBtn").click(function () {
+    const filter = $(this).data("filter");
+    const userId = "{{ user.id }}";
+    $(".product-card").each(function () {
+      const cardUser = $(this).data("user");
+      const price = parseInt($(this).data("price"));
+      let show = true;
+      if(filter === "my" && cardUser != userId) show = false;
+      if(filter === "expensive" && price <= 1000000) show = false;
+      $(this).toggle(show);
+    });
+  });
+
+  $("#searchInput").on("input", function () {
+    const query = this.value.toLowerCase();
+    $(".product-card").each(function () {
+      const name = $(this).find(".product-name").text().toLowerCase();
+      const desc = $(this).find(".text-gray-300").text().toLowerCase();
+      $(this).toggle(name.includes(query) || desc.includes(query));
+    });
+  });
+});
+</script>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const welcomeEl = document.querySelector('.typing.welcome');
   const descEl = document.querySelector('.typing.description');
-
-  if (!welcomeEl || !descEl) return;
-
-  const typeTextWithCursor = (el, text, speed = 50) => {
-    return new Promise((resolve) => {
-      el.textContent = '';
-      let i = 0;
-      const cursor = '|';
-      let showingCursor = true;
-
-      const interval = setInterval(() => {
-        if (i <= text.length) {
-          el.textContent = text.substring(0, i) + cursor;
-          i++;
-        } else {
-          clearInterval(interval);
-          el.textContent = text; 
-          resolve();
-        }
-      }, speed);
-    });
-  };
-
-  const startTyping = async () => {
-    await typeTextWithCursor(welcomeEl, welcomeEl.dataset.text, 50);
-    await typeTextWithCursor(descEl, descEl.dataset.text, 30);
-  };
-
-  startTyping();
+  async function typeText(el, text, speed = 40) {
+    el.textContent = '';
+    let i = 0;
+    function typeNext() {
+      if (i < text.length) {
+        el.textContent += text.charAt(i);
+        i++;
+        setTimeout(typeNext, speed);
+      }
+    }
+    typeNext();
+  }
+  const welcomeText = welcomeEl.dataset.text;
+  const descText = descEl.dataset.text;
+  setTimeout(async () => {
+    await typeText(welcomeEl, welcomeText, 40);
+    setTimeout(() => typeText(descEl, descText, 20), 500);
+  }, 400);
 });
 </script>
 

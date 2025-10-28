@@ -135,5 +135,13 @@ Proses implementasi checklist dilakukan secara bertahap. Pertama, saya membuat s
 
 </details>
 
+<details align="justify">
+    <summary><b>Tugas 6</b></summary>
+
+
+
+
+</details>
+
 
 

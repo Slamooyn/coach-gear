@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block meta %}
-<title>Login</title>
+<title>Login | CoachGear</title>
 {% endblock meta %}
 
 {% block content %}
@@ -14,7 +14,8 @@
       <h1 class="text-3xl font-extrabold tracking-wide">Login</h1>
       <p class="text-gray-400 text-sm mt-2">Masuk ke akunmu untuk lanjut</p>
     </div>
-    <form method="POST" action="" class="space-y-5">
+
+    <form id="loginForm" method="POST" class="space-y-5">
       {% csrf_token %}
       <div>
         <label class="block text-sm mb-2 font-semibold">Username</label>
@@ -33,14 +34,7 @@
         Login
       </button>
     </form>
-
-    {% if messages %}
-      <ul class="mt-4 text-red-500 text-sm space-y-1">
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
+    <div id="loginMessage" class="text-center mt-4 text-sm"></div>
 
     <p class="text-gray-400 text-sm mt-6 text-center">
       Belum punya akun?
@@ -50,4 +44,47 @@
     </p>
   </div>
 </section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("loginForm");
+    const messageBox = document.getElementById("loginMessage");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+      try {
+        const response = await fetch("", {
+          method: "POST",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": csrfToken,
+          },
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+          messageBox.innerHTML = `<p class="text-green-400 font-medium mt-2">✅ Login berhasil! Mengarahkan...</p>`;
+          setTimeout(() => (window.location.href = "/"), 1000);
+        } else if (data.status === "error") {
+          let errMsg = "";
+          for (const [key, value] of Object.entries(data.errors)) {
+            errMsg += `<p>${key}: ${value.join(", ")}</p>`;
+          }
+          messageBox.innerHTML = `<div class="text-red-400 font-medium mt-2">❌ ${errMsg}</div>`;
+        } else {
+          messageBox.innerHTML = `<p class="text-red-400">Terjadi kesalahan tak terduga.</p>`;
+        }
+      } catch (error) {
+        console.error(error);
+        messageBox.innerHTML = `<p class="text-red-400">Gagal terhubung ke server.</p>`;
+      }
+    });
+  });
+</script>
 {% endblock content %}

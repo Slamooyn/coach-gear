@@ -1,15 +1,134 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    {% block meta %} {% endblock meta %}
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{% static 'css/global.css' %}"/>
-  </head>
-  <body class="antialiased bg-[#0B0D0F] text-white">
-    {% block content %} {% endblock content %}
-    <script src="{% static 'js/typing.js' %}"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  {% block meta %}{% endblock meta %}
+  <title>{% block title %}Coach Gear{% endblock title %}</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Be+Vietnam+Pro:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'css/global.css' %}" />
+
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background-color: #0b0d0f;
+      color: white;
+      overflow-x: hidden;
+    }
+    #loader.hidden { display: none !important; }
+  </style>
+</head>
+
+<body class="relative">
+  <div id="loader" class="fixed inset-0 bg-[#0b0d0f]/95 z-[10000] flex flex-col items-center justify-center">
+    <div class="relative w-16 h-16">
+      <div class="absolute inset-0 rounded-full border-4 border-yellow-400 animate-ping"></div>
+      <div class="absolute inset-0 rounded-full border-4 border-yellow-500"></div>
+      <div class="absolute inset-0 flex items-center justify-center">
+        <div class="w-6 h-6 bg-yellow-400 rounded-full animate-bounce"></div>
+      </div>
+    </div>
+    <p class="mt-4 text-yellow-400 font-semibold text-lg animate-pulse">Loading...</p>
+  </div>
+
+  <div id="toast-container" class="fixed top-5 right-5 z-[11000] flex flex-col gap-2 pointer-events-none"></div>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+    .toast {
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+    .toast.fade-out { opacity: 0; }
+  </style>
+  <script>
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+
+      toast.className = `toast px-4 py-3 rounded-lg shadow-lg text-white font-semibold animate-fadeIn ${
+        type === "success" ? "bg-green-600" :
+        type === "error" ? "bg-red-600" :
+        "bg-yellow-600"
+      }`;
+      toast.textContent = message;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add("fade-out");
+        setTimeout(() => toast.remove(), 500);
+      }, 3000);
+    }
+  </script>
+
+  <div id="content" data-aos="fade-up" style="display:none;">
+    {% block content %}{% endblock content %}
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const loader = document.getElementById("loader");
+    const content = document.getElementById("content");
+
+    if (content) content.style.display = "none";
+
+    function initAOS() {
+      if (typeof AOS !== "undefined") {
+        AOS.init({
+          duration: 1000,
+          once: true,
+          offset: 100,
+          easing: "ease-out-cubic",
+        });
+      }
+    }
+
+    function hideLoader() {
+      if (!loader || loader.style.display === "none") return;
+      loader.style.transition = "opacity 0.6s ease";
+      loader.style.opacity = 0;
+      setTimeout(() => {
+        loader.style.display = "none";
+        if (content) content.style.display = "block";
+        initAOS();
+      }, 600);
+    }
+
+    window.addEventListener("load", hideLoader);
+    setTimeout(hideLoader, 2000);
+
+    window.addEventListener("pageshow", function(event) {
+      if (event.persisted) hideLoader();
+    });
+
+    document.addEventListener("click", function (e) {
+      const target = e.target.closest("a");
+      if (!target || target.target || target.href.startsWith("#")) return;
+      if (target.classList.contains("no-loader")) return;
+
+      if (loader && content) {
+        loader.style.display = "flex";
+        loader.style.opacity = 1;
+        content.style.display = "none";
+      }
+    });
+  });
+
+  window.showLoader = function() { $("#loader").fadeIn(200); };
+  window.hideLoader = function() { $("#loader").fadeOut(300); };
+  </script>
+
+  {% block scripts %}{% endblock scripts %}
+</body>
 </html>
