@@ -50,7 +50,7 @@
 
           {% if user.is_authenticated %}
           <p class="text-gray-400 text-sm mt-2">
-            Terakhir login: {{ user.last_login|date:"l, d F Y • H:i" }}
+            Terakhir login {{ user.last_login|date:"l, d F Y • H:i" }}
           </p>
           {% endif %}
 
