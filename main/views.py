@@ -10,6 +10,9 @@ from main.models import Product
 from main.forms import ProductForm
 import datetime
 from django.shortcuts import redirect
+import requests
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -55,6 +58,27 @@ def product_add(request):
         return JsonResponse({"status": "error", "errors": form.errors}, status=400)
 
     return JsonResponse({"status": "invalid_request"}, status=400)
+
+@csrf_exempt
+def product_add_flutter(request):
+    if request.method == "POST":
+        data = request.POST
+
+        product = Product.objects.create(
+            user=request.user,  # <--- TAMBAH INI
+            name=data.get("name"),
+            price=data.get("price"),
+            stock=data.get("stock"),
+            description=data.get("description"),
+            category=data.get("category"),
+            thumbnail=data.get("thumbnail", ""),
+            is_featured=data.get("is_featured") == "true",
+        )
+
+        return JsonResponse({"status": "success"}, status=201)
+
+    return JsonResponse({"status": "invalid request"}, status=400)
+
 
 @login_required(login_url='/login')
 def product_details(request, id):
@@ -162,7 +186,13 @@ def show_xml(request):
 
 
 def show_json(request):
-    product_list = Product.objects.all()
+    filter_type = request.GET.get("filter", "all")
+
+    if filter_type == "all":
+        product_list = Product.objects.all()
+    else:  # filter_type == "mine"
+        product_list = Product.objects.filter(user=request.user)
+
     json_data = serializers.serialize("json", product_list)
     return HttpResponse(json_data, content_type="application/json")
 
@@ -183,3 +213,32 @@ def show_json_by_id(request, product_id):
         return HttpResponse(json_data, content_type="application/json")
     except Product.DoesNotExist:
         return HttpResponse(status=404)
+    
+def proxy_image(request):
+    image_url = request.GET.get('url')
+    if not image_url:
+        return HttpResponse('No URL provided', status=400)
+    
+    try:
+        # Fetch image from external source
+        response = requests.get(image_url, timeout=10)
+        response.raise_for_status()
+        
+        # Return the image with proper content type
+        return HttpResponse(
+            response.content,
+            content_type=response.headers.get('Content-Type', 'image/jpeg')
+        )
+    except requests.RequestException as e:
+        return HttpResponse(f'Error fetching image: {str(e)}', status=500)
+    
+def show_json_flutter(request):
+    filter_type = request.GET.get("filter", "all")
+
+    if filter_type == "all":
+        product_list = Product.objects.all()
+    else:
+        product_list = Product.objects.filter(user=request.user)
+
+    data = serializers.serialize("json", product_list)
+    return HttpResponse(data, content_type="application/json")

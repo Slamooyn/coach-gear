@@ -1,5 +1,5 @@
 from django.urls import path
-from main.views import (show_main,product_add,product_details,edit_product,delete_product,register,login_user,logout_user,show_json,show_xml, show_json_by_id,show_xml_by_id,)
+from main.views import (show_main,product_add,product_details,edit_product,delete_product,register,login_user,logout_user,show_json,show_xml, show_json_by_id,show_xml_by_id,proxy_image,product_add_flutter,show_json_flutter)
 
 app_name = "main"
 
@@ -16,4 +16,7 @@ urlpatterns = [
     path("xml/", show_xml, name="show_xml"),
     path("json/<uuid:product_id>/", show_json_by_id, name="show_json_by_id"),
     path("xml/<uuid:product_id>/", show_xml_by_id, name="show_xml_by_id"),
+    path('proxy-image/', proxy_image, name='proxy_image'),
+    path("flutter/add/", product_add_flutter, name="product_add_flutter"),
+    path("flutter/json/", show_json_flutter, name="show_json_flutter"),
 ]
